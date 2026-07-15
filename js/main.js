@@ -295,31 +295,42 @@
       return START_V_PAD + (1 - START_V_PAD) * t;
     }
 
+    // The frame element itself stays a fixed size (the "stage") so that
+    // per-tick scroll updates never touch width/height and never trigger
+    // browser layout — only `transform` (compositor) and `clip-path`
+    // (paint, no layout) change every tick, which is what keeps the scrub
+    // smooth. The video is sized once at its natural 1920x1080 and moved
+    // entirely via `transform: translate() scale()`.
+    var stageW = 0, stageH = 0;
+
+    function updateStage() {
+      stageW = window.innerWidth * MAX_W_FRAC;
+      stageH = window.innerHeight * MAX_H_FRAC;
+      frame.style.width = stageW + "px";
+      frame.style.height = stageH + "px";
+    }
+
     function applyLayout(progress) {
       var box = bboxAt(progress);
       var bboxAspect = (box.w * VIDEO_W) / (box.h * VIDEO_H);
       var vPad = vPadAt(progress);
-      var maxW = window.innerWidth * MAX_W_FRAC;
-      var maxH = window.innerHeight * MAX_H_FRAC;
-      var frameW = Math.min(maxW, (maxH / vPad) * bboxAspect);
+      var frameW = Math.min(stageW, (stageH / vPad) * bboxAspect);
       var frameH = (frameW / bboxAspect) * vPad;
 
       var scale = (frameW * MARGIN) / (box.w * VIDEO_W);
-      var videoW = VIDEO_W * scale;
-      var videoH = VIDEO_H * scale;
-      var tx = frameW / 2 - box.cx * VIDEO_W * scale;
-      var ty = frameH / 2 - box.cy * VIDEO_H * scale;
+      var tx = stageW / 2 - box.cx * VIDEO_W * scale;
+      var ty = stageH / 2 - box.cy * VIDEO_H * scale;
+      var insetX = Math.max(0, (stageW - frameW) / 2);
+      var insetY = Math.max(0, (stageH - frameH) / 2);
 
-      frame.style.width = frameW + "px";
-      frame.style.height = frameH + "px";
-      video.style.width = videoW + "px";
-      video.style.height = videoH + "px";
-      video.style.transform = "translate(" + tx + "px, " + ty + "px)";
+      video.style.transform = "translate(" + tx + "px, " + ty + "px) scale(" + scale + ")";
+      frame.style.clipPath = "inset(" + insetY + "px " + insetX + "px " + insetY + "px " + insetX + "px)";
     }
 
     function showFinalFrameStatic() {
       var reveal = function () {
         video.currentTime = Math.max(0, video.duration - 0.05);
+        updateStage();
         applyLayout(1);
         if (hint) hint.classList.add("is-hidden");
       };
@@ -336,6 +347,7 @@
       var duration = video.duration;
       if (!duration || !isFinite(duration)) return;
 
+      updateStage();
       applyLayout(0);
 
       ScrollTrigger.create({
@@ -350,8 +362,13 @@
         }
       });
 
+      var resizeTimer;
       window.addEventListener("resize", function () {
-        applyLayout(video.currentTime / duration || 0);
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          updateStage();
+          applyLayout(video.currentTime / duration || 0);
+        }, 150);
       });
     }
 

@@ -666,18 +666,22 @@ section { padding: var(--space-7) 0; }
 .exploded-frame {
   position: relative;
   overflow: hidden;
-  /* Width/height are set in JS every scroll tick, tracking the model's own
-     bounding-box aspect ratio inside the source video: wide/landscape when
-     assembled, narrowing to portrait once fully exploded. Keeps the crop
-     tight to the subject instead of a fixed 16:9 box with dead margin. */
+  /* Fixed "stage" size, set once in JS (not per scroll tick). The model's
+     bounding-box aspect ratio inside the source video changes continuously
+     as it explodes (wide/landscape when assembled, narrowing to portrait
+     once fully exploded) — that crop is achieved via clip-path on this
+     fixed box instead of resizing it, so scroll updates never touch
+     layout-triggering properties. */
 }
 .exploded-video {
   position: absolute;
   top: 0;
   left: 0;
+  width: 1920px;
+  height: 1080px;
   display: block;
   transform-origin: top left;
-  will-change: transform, width, height;
+  will-change: transform;
 }
 
 .exploded-progress-hint {
