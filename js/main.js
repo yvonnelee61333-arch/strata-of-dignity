@@ -65,10 +65,18 @@
     var isAnimating = false;
     var animTimer = null;
 
-    // Content is the same 9 slides duplicated once, back to back, so the
-    // halfway point is exactly where the loop can reset invisibly.
+    // Content is the same N slides duplicated once, back to back, so
+    // scrolling by exactly one set's stride lands each slide on the
+    // position its duplicate previously held — an invisible loop reset.
+    // That stride is NOT scrollWidth/2: scrollWidth counts N slide widths
+    // plus (2N-1) gaps total, and half of that over-counts by half a gap
+    // (the seam between the two sets), landing the reset half a gap short
+    // every time. Measuring the real offset between a slide and its
+    // duplicate sidesteps the arithmetic entirely.
     function oneSetWidth() {
-      return track.scrollWidth / 2;
+      var slides = track.querySelectorAll(".room-slide");
+      var n = slides.length / 2;
+      return slides[n].offsetLeft - slides[0].offsetLeft;
     }
 
     function wrap() {
