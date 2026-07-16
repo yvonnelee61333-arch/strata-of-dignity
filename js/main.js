@@ -29,6 +29,17 @@
 
     var AUTO_SPEED = 55; // px per second
     var lastTime = null;
+    var mobileMql = window.matchMedia("(max-width: 639px)");
+    function isMobile() { return mobileMql.matches; }
+
+    // On mobile, one photo fills the viewport and paging is arrow-only —
+    // no auto-advance marquee. Measures the real slide+gap width rather
+    // than a hardcoded value so it stays correct if the CSS width changes.
+    function slideStep() {
+      var slide = track.querySelector(".room-slide");
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return (slide ? slide.getBoundingClientRect().width : viewport.clientWidth) + gap;
+    }
 
     // The DOM's scrollLeft rounds to the nearest integer on every write in
     // most browsers. Reading it back each frame and adding a sub-pixel
@@ -76,7 +87,7 @@
       if (lastTime === null) lastTime = now;
       var dt = (now - lastTime) / 1000;
       lastTime = now;
-      if (!isPaused() && !prefersReduced) {
+      if (!isPaused() && !prefersReduced && !isMobile()) {
         pos += AUTO_SPEED * dt;
         viewport.scrollLeft = pos;
       }
@@ -90,7 +101,7 @@
       if (resumeTimer) clearTimeout(resumeTimer);
       resumeTimer = setTimeout(function () { isButtonPause = false; }, 3000);
 
-      var pageAmount = viewport.clientWidth * 0.85;
+      var pageAmount = isMobile() ? slideStep() : viewport.clientWidth * 0.85;
       var target = pos + direction * pageAmount;
       // Only pre-adjust the backward/negative case (scrollLeft can't go
       // negative, so it must be re-based into the duplicate set up front).

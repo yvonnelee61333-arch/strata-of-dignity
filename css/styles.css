@@ -631,6 +631,46 @@ section { padding: var(--space-7) 0; }
 /* Auto-advance is skipped entirely for prefers-reduced-motion in JS;
    prev/next buttons remain fully usable either way. */
 
+/* Below 640px: one full photo at a time, paged only by the arrow buttons
+   (JS disables auto-advance and pages by exactly one slide width here).
+   Caption sits in normal flow underneath instead of on hover, since touch
+   has no hover state, and the image uses object-fit:contain at its native
+   ratio so nothing is ever cropped. */
+@media (max-width: 639px) {
+  .room-viewport { mask-image: none; -webkit-mask-image: none; padding: var(--space-5) 0 var(--space-6); }
+  /* Full viewport width per slide (no neighbor peeking at the edges) —
+     the arrow buttons float on top of the photo instead of beside it. */
+  .room-slide {
+    width: 100vw;
+    height: auto;
+    aspect-ratio: var(--room-ratio);
+    cursor: default;
+    transition: none;
+  }
+  .room-slide:hover,
+  .room-slide:focus-within {
+    width: 100vw;
+  }
+  .room-slide img { object-fit: contain; }
+  .room-slide-title,
+  .room-slide-info,
+  .room-slide:hover .room-slide-title,
+  .room-slide:focus-within .room-slide-title,
+  .room-slide:hover .room-slide-info,
+  .room-slide:focus-within .room-slide-info {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+    transition-delay: 0s;
+    white-space: normal;
+    text-align: center;
+    padding: 0 var(--space-3);
+  }
+  .room-slide-title { margin-top: var(--space-3); }
+  .room-slide-info { margin-top: var(--space-1); }
+}
+
 /* ============================================================
    Materials
    ============================================================ */
