@@ -240,98 +240,14 @@
   (function explodedScrub() {
     var wrap = document.getElementById("explodedPinWrap");
     var video = document.getElementById("explodedVideo");
-    var frame = document.getElementById("explodedFrame");
     var hint = document.getElementById("explodedProgressHint");
-    if (!wrap || !video || !frame) return;
+    if (!wrap || !video) return;
 
     video.pause();
-
-    // The model's bounding box within the fixed 1920x1080 source video,
-    // measured at each point in the explode animation: wide/landscape when
-    // assembled, narrowing to roughly portrait once fully exploded, and
-    // drifting slightly off-center. w/h/cx/cy are fractions of the video's
-    // own dimensions. The frame's own aspect ratio is set to match the
-    // bounding box each tick, and the video is scaled + translated so that
-    // box fills the frame edge to edge (with a small margin), keeping the
-    // subject centered with minimal white space at every point.
-    var VIDEO_W = 1920, VIDEO_H = 1080;
-    var MARGIN = 0.94;
-    var MAX_W_FRAC = 0.92;
-    var MAX_H_FRAC = 0.88;
-    // At the very start (assembled state) the crop reads as too tight
-    // against the roofline and base; add extra top/bottom breathing room
-    // there, tapering back to a normal crop by the time it starts exploding.
-    var START_V_PAD = 1.28;
-    var V_PAD_TAPER_END = 0.3;
-    var FRAME_KEYS = [
-      { p: 0, w: 0.844, h: 0.576, cx: 0.498, cy: 0.501 },
-      { p: 0.15, w: 0.768, h: 0.604, cx: 0.523, cy: 0.513 },
-      { p: 0.3, w: 0.558, h: 0.683, cx: 0.542, cy: 0.516 },
-      { p: 0.5, w: 0.415, h: 0.711, cx: 0.552, cy: 0.509 },
-      { p: 0.7, w: 0.355, h: 0.741, cx: 0.550, cy: 0.489 },
-      { p: 0.85, w: 0.346, h: 0.746, cx: 0.549, cy: 0.482 },
-      { p: 1, w: 0.346, h: 0.746, cx: 0.549, cy: 0.482 }
-    ];
-
-    function bboxAt(progress) {
-      for (var i = 1; i < FRAME_KEYS.length; i++) {
-        if (progress <= FRAME_KEYS[i].p) {
-          var a = FRAME_KEYS[i - 1], b = FRAME_KEYS[i];
-          var t = (progress - a.p) / (b.p - a.p || 1);
-          return {
-            w: a.w + (b.w - a.w) * t,
-            h: a.h + (b.h - a.h) * t,
-            cx: a.cx + (b.cx - a.cx) * t,
-            cy: a.cy + (b.cy - a.cy) * t
-          };
-        }
-      }
-      return FRAME_KEYS[FRAME_KEYS.length - 1];
-    }
-
-    function vPadAt(progress) {
-      if (progress >= V_PAD_TAPER_END) return 1;
-      var t = progress / V_PAD_TAPER_END;
-      return START_V_PAD + (1 - START_V_PAD) * t;
-    }
-
-    // The frame element itself stays a fixed size (the "stage") so that
-    // per-tick scroll updates never touch width/height and never trigger
-    // browser layout — only `transform` (compositor) and `clip-path`
-    // (paint, no layout) change every tick, which is what keeps the scrub
-    // smooth. The video is sized once at its natural 1920x1080 and moved
-    // entirely via `transform: translate() scale()`.
-    var stageW = 0, stageH = 0;
-
-    function updateStage() {
-      stageW = window.innerWidth * MAX_W_FRAC;
-      stageH = window.innerHeight * MAX_H_FRAC;
-      frame.style.width = stageW + "px";
-      frame.style.height = stageH + "px";
-    }
-
-    function applyLayout(progress) {
-      var box = bboxAt(progress);
-      var bboxAspect = (box.w * VIDEO_W) / (box.h * VIDEO_H);
-      var vPad = vPadAt(progress);
-      var frameW = Math.min(stageW, (stageH / vPad) * bboxAspect);
-      var frameH = (frameW / bboxAspect) * vPad;
-
-      var scale = (frameW * MARGIN) / (box.w * VIDEO_W);
-      var tx = stageW / 2 - box.cx * VIDEO_W * scale;
-      var ty = stageH / 2 - box.cy * VIDEO_H * scale;
-      var insetX = Math.max(0, (stageW - frameW) / 2);
-      var insetY = Math.max(0, (stageH - frameH) / 2);
-
-      video.style.transform = "translate(" + tx + "px, " + ty + "px) scale(" + scale + ")";
-      frame.style.clipPath = "inset(" + insetY + "px " + insetX + "px " + insetY + "px " + insetX + "px)";
-    }
 
     function showFinalFrameStatic() {
       var reveal = function () {
         video.currentTime = Math.max(0, video.duration - 0.05);
-        updateStage();
-        applyLayout(1);
         if (hint) hint.classList.add("is-hidden");
       };
       if (video.readyState >= 1) reveal();
@@ -347,9 +263,6 @@
       var duration = video.duration;
       if (!duration || !isFinite(duration)) return;
 
-      updateStage();
-      applyLayout(0);
-
       ScrollTrigger.create({
         trigger: wrap,
         start: "top top",
@@ -357,18 +270,8 @@
         scrub: 0.25,
         onUpdate: function (self) {
           video.currentTime = self.progress * duration;
-          applyLayout(self.progress);
           if (hint) hint.classList.toggle("is-hidden", self.progress > 0.06);
         }
-      });
-
-      var resizeTimer;
-      window.addEventListener("resize", function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function () {
-          updateStage();
-          applyLayout(video.currentTime / duration || 0);
-        }, 150);
       });
     }
 
