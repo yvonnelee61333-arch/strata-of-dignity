@@ -108,6 +108,7 @@
       </div>
       <div class="site-media site-plan reveal">
         <img src="assets/images/site-plan-hotspots.jpg" alt="Final top-view site plan overlaid on the Goodhope St satellite lot, showing three staggered homes, perimeter parking, community courtyard, and pool.">
+        <p class="site-plan-hint">Click a marker on the plan to see that space.</p>
 
         <button type="button" class="site-hotspot" style="left: 60.6%; top: 31.4%;" aria-label="House"
           data-image="assets/images/front-exterior-1.jpg"
@@ -335,16 +336,21 @@
     <div class="container">
       <p class="eyebrow reveal">Documentation</p>
       <h2 class="reveal">The drawings behind the renders.</h2>
+      <p class="drawings-hint reveal">Click a button to view the full drawing.</p>
       <div class="drawings-grid">
-        <figure class="drawing-card reveal">
-          <img src="assets/images/site-plan-line.jpg" alt="Scaled architectural site plan drawing of the 50 by 130 foot lot, showing three staggered units, perimeter parking, landscaping, community area, and the laundry/pantry building.">
-          <figcaption>Site Plan — 50' × 130' lot</figcaption>
-        </figure>
-        <figure class="drawing-card reveal">
-          <img src="assets/images/floor-plan-line.jpg" alt="Scaled architectural floor plan drawing of a single unit, 41 feet 8 inches by 16 feet 8 inches, labeled with patio, foyer, kitchen, bathroom, living room, closet, and bedroom.">
-          <figcaption>Unit Floor Plan — 41'-8" × 16'-8"</figcaption>
-        </figure>
+        <button type="button" class="drawing-btn reveal" data-image="assets/images/site-plan-line.jpg" data-title="Site Plan">Site Plan</button>
+        <button type="button" class="drawing-btn reveal" data-image="assets/images/floor-plan-line.jpg" data-title="Unit Floor Plan">Unit Floor Plan</button>
+        <button type="button" class="drawing-btn reveal" data-image="assets/images/community-design-development.jpg" data-title="Community Design Development">Community Design Development</button>
+        <button type="button" class="drawing-btn reveal" data-image="assets/images/concept-to-design.jpg" data-title="Concept to Design">Concept to Design</button>
+        <button type="button" class="drawing-btn reveal" data-image="assets/images/community-gym-sketch.jpg" data-title="Community Gym Sketch">Community Gym Sketch</button>
       </div>
+    </div>
+
+    <div class="drawing-overlay" id="drawingOverlay"></div>
+    <div class="drawing-popup" id="drawingPopup" hidden>
+      <button type="button" class="drawing-popup-close" id="drawingPopupClose" aria-label="Close">&times;</button>
+      <img id="drawingPopupImage" src="" alt="">
+      <p class="drawing-popup-title" id="drawingPopupTitle"></p>
     </div>
   </section>
 

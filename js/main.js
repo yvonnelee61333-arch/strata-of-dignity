@@ -201,6 +201,47 @@
     });
   })();
 
+  /* ---------- Drawing lightbox ---------- */
+  (function drawingLightbox() {
+    var buttons = document.querySelectorAll(".drawing-btn");
+    var overlay = document.getElementById("drawingOverlay");
+    var popup = document.getElementById("drawingPopup");
+    if (!buttons.length || !overlay || !popup) return;
+
+    var closeBtn = document.getElementById("drawingPopupClose");
+    var popupImage = document.getElementById("drawingPopupImage");
+    var popupTitle = document.getElementById("drawingPopupTitle");
+    var lastTrigger = null;
+
+    function open(btn) {
+      lastTrigger = btn;
+      popupImage.src = btn.dataset.image;
+      popupImage.alt = btn.dataset.title;
+      popupTitle.textContent = btn.dataset.title;
+      popup.hidden = false;
+      overlay.classList.add("is-visible");
+      document.body.style.overflow = "hidden";
+      closeBtn.focus();
+    }
+
+    function close() {
+      popup.hidden = true;
+      overlay.classList.remove("is-visible");
+      document.body.style.overflow = "";
+      if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
+    }
+
+    buttons.forEach(function (btn) {
+      btn.addEventListener("click", function () { open(btn); });
+    });
+
+    closeBtn.addEventListener("click", close);
+    overlay.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !popup.hidden) close();
+    });
+  })();
+
   /* ---------- Strategy card spotlight glow (pointer-tracked) ---------- */
   (function glowCards() {
     var cards = document.querySelectorAll(".strategy-card");
