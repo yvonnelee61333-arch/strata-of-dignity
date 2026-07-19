@@ -17,6 +17,17 @@
     window.addEventListener("load", function () {
       ScrollTrigger.refresh();
     });
+    // Web fonts (Gelasio, loaded with font-display:swap) can finish
+    // swapping in after the "load" event already fired, reflowing text
+    // height throughout the page — which silently invalidates every
+    // cached pin position below the swap, including the exploded-view
+    // scrub. Refreshing again once fonts have actually settled catches
+    // that case too.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () {
+        ScrollTrigger.refresh();
+      });
+    }
   }
 
   /* ---------- Room slider: auto-advance + prev/next paging ---------- */
@@ -137,6 +148,59 @@
     });
   })();
 
+  /* ---------- Site plan hotspots ---------- */
+  (function siteHotspots() {
+    var plan = document.querySelector(".site-plan");
+    var overlay = document.getElementById("siteHotspotOverlay");
+    var popup = document.getElementById("siteHotspotPopup");
+    if (!plan || !overlay || !popup) return;
+
+    var closeBtn = document.getElementById("siteHotspotClose");
+    var popupImage = document.getElementById("siteHotspotImage");
+    var popupTitle = document.getElementById("siteHotspotTitle");
+    var popupDesc = document.getElementById("siteHotspotDesc");
+    var hotspots = plan.querySelectorAll(".site-hotspot");
+    var activeHotspot = null;
+
+    function open(hotspot) {
+      if (activeHotspot) activeHotspot.classList.remove("is-active");
+      activeHotspot = hotspot;
+      hotspot.classList.add("is-active");
+      popupImage.src = hotspot.dataset.image;
+      popupImage.alt = hotspot.dataset.title;
+      popupTitle.textContent = hotspot.dataset.title;
+      popupDesc.textContent = hotspot.dataset.desc;
+      popup.hidden = false;
+      overlay.classList.add("is-visible");
+      document.body.style.overflow = "hidden";
+      closeBtn.focus();
+    }
+
+    function close() {
+      popup.hidden = true;
+      overlay.classList.remove("is-visible");
+      document.body.style.overflow = "";
+      if (activeHotspot) {
+        activeHotspot.classList.remove("is-active");
+        activeHotspot.focus();
+        activeHotspot = null;
+      }
+    }
+
+    hotspots.forEach(function (hotspot) {
+      hotspot.addEventListener("click", function () {
+        if (activeHotspot === hotspot) { close(); return; }
+        open(hotspot);
+      });
+    });
+
+    closeBtn.addEventListener("click", close);
+    overlay.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !popup.hidden) close();
+    });
+  })();
+
   /* ---------- Strategy card spotlight glow (pointer-tracked) ---------- */
   (function glowCards() {
     var cards = document.querySelectorAll(".strategy-card");
@@ -228,29 +292,6 @@
         start: "top top",
         end: "bottom top",
         scrub: true
-      }
-    });
-  })();
-
-  /* ---------- Strata layer bars: draw in on scroll ---------- */
-  (function strataBars() {
-    var bars = document.querySelectorAll(".strata-bars .layer");
-    if (!bars.length) return;
-
-    if (prefersReduced || !hasGSAP) {
-      bars.forEach(function (b) { b.style.transform = "scaleX(1)"; });
-      return;
-    }
-
-    gsap.to(bars, {
-      scaleX: 1,
-      duration: 0.7,
-      ease: "power3.out",
-      stagger: 0.12,
-      scrollTrigger: {
-        trigger: ".strata-bars",
-        start: "top 85%",
-        once: true
       }
     });
   })();

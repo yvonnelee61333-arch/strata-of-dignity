@@ -6,18 +6,22 @@
    actual renders.
    ============================================================ */
 :root {
-  --color-ink: #18140f;
-  --color-ink-soft: #4a4238;
-  --color-surface: #f7f2e9;
-  --color-surface-alt: #eee3d1;
+  /* Always-dark palette — the site no longer flips with system light/dark
+     preference; these were formerly the dark-mode override values. */
+  --color-ink: #f3ece0;
+  --color-ink-soft: #cabfae;
+  --color-surface: #17130f;
+  --color-surface-alt: #201a13;
   --color-surface-deep: #221b14;
   --color-terracotta: #c1602f;
   --color-terracotta-dark: #9a4a22;
   --color-sage: #7c8a5c;
+  --color-highlight: #c3ce55;
   --color-concrete: #a99e8c;
-  --color-white: #ffffff;
+  --color-white: #1f1911;
   /* Fixed light text color for sections with a permanently-dark background
-     (hero, materials, credits) — must NOT flip in dark-mode, unlike --color-white. */
+     (hero, materials, credits) — kept distinct from --color-white since the
+     latter is a token name, not a guarantee of lightness. */
   --color-on-dark: #f7f1e6;
 
   --font-display: "Gelasio", Georgia, serif;
@@ -38,16 +42,6 @@
 
   --max-width: 1280px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-surface: #17130f;
-    --color-surface-alt: #201a13;
-    --color-ink: #f3ece0;
-    --color-ink-soft: #cabfae;
-    --color-white: #1f1911;
-  }
 }
 
 /* ============================================================
@@ -337,37 +331,60 @@ section { padding: var(--space-7) 0; }
   max-width: 32ch;
   color: var(--color-ink-soft);
 }
+.stat-caption strong,
+.problem-copy p strong {
+  color: var(--color-highlight);
+  font-weight: 700;
+}
+.stat-photo {
+  display: block;
+  width: 100%;
+  margin-top: var(--space-3);
+  border-radius: var(--radius-md);
+  filter: grayscale(1);
+  opacity: 0.6;
+}
 .stat-source {
   margin-top: var(--space-2);
   font-family: var(--font-mono);
   font-size: 0.75rem;
+  font-style: italic;
   color: var(--color-concrete);
 }
-.problem-copy h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); margin-bottom: var(--space-3); }
-.problem-copy p { max-width: 60ch; color: var(--color-ink-soft); }
-.theme-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  margin-top: var(--space-4);
+.problem-copy h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3vw, 2.125rem);
+  font-weight: 400;
+  margin-bottom: var(--space-3);
+  color: var(--color-ink-soft);
 }
-.theme-pill {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  border: 1px solid var(--color-concrete);
-  border-radius: 999px;
-  padding: 10px 18px;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
+.problem-copy p { max-width: 60ch; color: var(--color-ink-soft); }
+.problem-nrcdc-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+.problem-nrcdc-row p { margin: 0; text-wrap: pretty; }
+.nrcdc-badge {
+  flex-shrink: 0;
+  width: 220px;
+}
+.nrcdc-badge-lineart {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@media (max-width: 639px) {
+  .problem-nrcdc-row { flex-direction: column; align-items: flex-start; }
+  .nrcdc-badge { width: 180px; }
 }
 
 /* ============================================================
    Concept
    ============================================================ */
-.concept { background: var(--color-surface-alt); }
+.concept { background: var(--color-surface-deep); color: var(--color-on-dark); }
+.concept .eyebrow { color: #e8c9ab; }
 .concept-grid {
   display: grid;
   gap: var(--space-5);
@@ -376,22 +393,22 @@ section { padding: var(--space-7) 0; }
 @media (min-width: 900px) {
   .concept-grid { grid-template-columns: 1fr 1fr; gap: var(--space-6); }
 }
-.concept-media { position: relative; border-radius: var(--radius-md); overflow: hidden; }
-.concept-media img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 4/5; }
-.concept-copy h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); margin-bottom: var(--space-3); }
-.concept-copy p { color: var(--color-ink-soft); max-width: 58ch; margin-bottom: var(--space-3); }
-.strata-bars { display: flex; flex-direction: column; gap: 6px; margin: var(--space-4) 0; max-width: 320px; }
-.strata-bars .layer {
-  height: 14px;
-  border-radius: 2px;
-  transform-origin: left center;
-  transform: scaleX(0);
+.concept-media img { display: block; width: 100%; height: auto; }
+.concept-copy h2 {
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-3);
+  color: var(--color-on-dark);
 }
-.layer:nth-child(1) { background: var(--color-terracotta); }
-.layer:nth-child(2) { background: var(--color-sage); }
-.layer:nth-child(3) { background: var(--color-concrete); }
-.layer:nth-child(4) { background: var(--color-terracotta-dark); }
-.layer:nth-child(5) { background: var(--color-ink-soft); }
+.concept-copy p { color: #cabfae; max-width: 58ch; margin-bottom: var(--space-3); }
+.concept-definitions { font-style: italic; }
+.concept-definitions strong { color: var(--color-on-dark); font-weight: 700; }
+.concept-tagline {
+  font-style: italic;
+  font-weight: 700;
+  color: var(--color-highlight);
+}
 
 /* ============================================================
    Site + Floor plan
@@ -413,6 +430,132 @@ section { padding: var(--space-7) 0; }
 }
 .site-copy p { color: var(--color-ink-soft); max-width: 56ch; }
 .site-media img { border-radius: var(--radius-md); }
+
+.site-plan { position: relative; }
+.site-hotspot {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+.site-hotspot::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--color-terracotta);
+  opacity: 0.6;
+  animation: hotspot-pulse 2.2s ease-out infinite;
+}
+.site-hotspot span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-terracotta);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.site-hotspot:hover span,
+.site-hotspot:focus-visible span,
+.site-hotspot.is-active span {
+  transform: scale(1.25);
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.5);
+}
+@keyframes hotspot-pulse {
+  0% { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+.site-plan-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 8, 6, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.site-plan-overlay.is-visible { opacity: 1; pointer-events: auto; }
+
+.site-hotspot-popup {
+  position: fixed;
+  inset: 3%;
+  margin: 0;
+  width: auto;
+  height: auto;
+  max-height: none;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-deep);
+  color: var(--color-on-dark);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2rem 4rem -0.5rem rgba(0, 0, 0, 0.6);
+  z-index: 101;
+}
+@media (min-width: 700px) {
+  .site-hotspot-popup { flex-direction: row; inset: 6% 10%; }
+}
+.site-hotspot-popup[hidden] { display: none; }
+.site-hotspot-popup-close {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 2;
+}
+.site-hotspot-popup-close:hover,
+.site-hotspot-popup-close:focus-visible {
+  background: var(--color-terracotta);
+}
+.site-hotspot-popup img {
+  display: block;
+  width: 100%;
+  height: 45vh;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+@media (min-width: 700px) {
+  .site-hotspot-popup img { width: 50%; height: auto; }
+}
+.site-hotspot-popup-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-y: auto;
+}
+.site-hotspot-popup-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  margin: 0 0 var(--space-3);
+  color: var(--color-on-dark);
+}
+.site-hotspot-popup-desc {
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  line-height: 1.6;
+  color: #cabfae;
+  margin: 0;
+  max-width: 48ch;
+}
 .feature-tags {
   display: flex;
   flex-wrap: wrap;
