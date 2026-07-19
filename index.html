@@ -345,13 +345,6 @@
         <button type="button" class="drawing-btn reveal" data-image="assets/images/community-gym-sketch.jpg" data-title="Community Gym Sketch">Community Gym Sketch</button>
       </div>
     </div>
-
-    <div class="drawing-overlay" id="drawingOverlay"></div>
-    <div class="drawing-popup" id="drawingPopup" hidden>
-      <button type="button" class="drawing-popup-close" id="drawingPopupClose" aria-label="Close">&times;</button>
-      <img id="drawingPopupImage" src="" alt="">
-      <p class="drawing-popup-title" id="drawingPopupTitle"></p>
-    </div>
   </section>
 
   <section class="performance" id="performance">
@@ -475,6 +468,13 @@
   </section>
 
 </main>
+
+<div class="lightbox-overlay" id="lightboxOverlay"></div>
+<div class="lightbox-popup" id="lightboxPopup" hidden>
+  <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+  <img id="lightboxImage" src="" alt="">
+  <p class="lightbox-title" id="lightboxTitle"></p>
+</div>
 
 <footer class="credits" id="credits">
   <div class="container">

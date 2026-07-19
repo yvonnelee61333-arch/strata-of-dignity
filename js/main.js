@@ -201,23 +201,22 @@
     });
   })();
 
-  /* ---------- Drawing lightbox ---------- */
-  (function drawingLightbox() {
-    var buttons = document.querySelectorAll(".drawing-btn");
-    var overlay = document.getElementById("drawingOverlay");
-    var popup = document.getElementById("drawingPopup");
-    if (!buttons.length || !overlay || !popup) return;
+  /* ---------- Shared image lightbox (drawings + room photos) ---------- */
+  (function lightbox() {
+    var overlay = document.getElementById("lightboxOverlay");
+    var popup = document.getElementById("lightboxPopup");
+    if (!overlay || !popup) return;
 
-    var closeBtn = document.getElementById("drawingPopupClose");
-    var popupImage = document.getElementById("drawingPopupImage");
-    var popupTitle = document.getElementById("drawingPopupTitle");
+    var closeBtn = document.getElementById("lightboxClose");
+    var popupImage = document.getElementById("lightboxImage");
+    var popupTitle = document.getElementById("lightboxTitle");
     var lastTrigger = null;
 
-    function open(btn) {
-      lastTrigger = btn;
-      popupImage.src = btn.dataset.image;
-      popupImage.alt = btn.dataset.title;
-      popupTitle.textContent = btn.dataset.title;
+    function open(trigger, imageSrc, title) {
+      lastTrigger = trigger;
+      popupImage.src = imageSrc;
+      popupImage.alt = title || "";
+      popupTitle.textContent = title || "";
       popup.hidden = false;
       overlay.classList.add("is-visible");
       document.body.style.overflow = "hidden";
@@ -231,8 +230,17 @@
       if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
     }
 
-    buttons.forEach(function (btn) {
-      btn.addEventListener("click", function () { open(btn); });
+    document.querySelectorAll(".drawing-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        open(btn, btn.dataset.image, btn.dataset.title);
+      });
+    });
+
+    // Room photos open with just the image — no title/info, per the gallery's own request.
+    document.querySelectorAll(".room-slide img").forEach(function (img) {
+      img.addEventListener("click", function () {
+        open(img, img.currentSrc || img.src, "");
+      });
     });
 
     closeBtn.addEventListener("click", close);
