@@ -440,7 +440,7 @@ section { padding: var(--space-7) 0; }
 }
 .site-media img { border-radius: var(--radius-md); }
 
-.site-plan { position: relative; }
+.site-plan-frame { position: relative; }
 .site-hotspot {
   position: absolute;
   width: 28px;
