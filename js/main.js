@@ -166,6 +166,12 @@
       if (activeHotspot) activeHotspot.classList.remove("is-active");
       activeHotspot = hotspot;
       hotspot.classList.add("is-active");
+
+      popupImage.classList.add("is-loading");
+      popupImage.addEventListener("load", function handleLoad() {
+        popupImage.classList.remove("is-loading");
+        popupImage.removeEventListener("load", handleLoad);
+      });
       popupImage.src = hotspot.dataset.image;
       popupImage.alt = hotspot.dataset.title;
       popupTitle.textContent = hotspot.dataset.title;

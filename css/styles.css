@@ -541,6 +541,11 @@ section { padding: var(--space-7) 0; }
   height: 45vh;
   object-fit: cover;
   flex-shrink: 0;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+.site-hotspot-popup img.is-loading {
+  opacity: 0;
 }
 @media (min-width: 700px) {
   .site-hotspot-popup img { width: 50%; height: auto; }
