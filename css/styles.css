@@ -1016,6 +1016,32 @@ section { padding: var(--space-7) 0; }
   border-left: 2px solid var(--color-terracotta);
 }
 
+.performance-figure {
+  margin: 0 0 var(--space-4);
+}
+.performance-figure img {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.performance-figure figcaption {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-concrete);
+}
+.performance-figure figcaption a {
+  color: #e8c9ab;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.performance-figure figcaption a:hover,
+.performance-figure figcaption a:focus-visible {
+  color: var(--color-terracotta);
+}
+
 .strategy-grid {
   display: grid;
   gap: var(--space-3);
