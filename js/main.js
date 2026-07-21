@@ -6,6 +6,13 @@
 
   if (hasGSAP) {
     gsap.registerPlugin(ScrollTrigger);
+    // Tapping into the walkthrough video's native fullscreen (or just the
+    // address bar hiding as the user scrolls) fires a mobile "resize" event
+    // even though nothing about the page layout actually changed. Without
+    // this, ScrollTrigger treats that as a real resize and re-measures pin
+    // start/end positions against the transient viewport height, which is
+    // exactly what breaks the exploded-view scrub intermittently on mobile.
+    ScrollTrigger.config({ ignoreMobileResize: true });
     // ScrollTriggers created early (e.g. the exploded-view scrub, which
     // binds as soon as the video's metadata loads) cache pixel positions
     // based on the page layout at THAT moment. Images/video further down
@@ -138,6 +145,15 @@
 
     if (prevBtn) prevBtn.addEventListener("click", function () { goToPage(-1); });
     if (nextBtn) nextBtn.addEventListener("click", function () { goToPage(1); });
+
+    // On mobile there's no auto-advance, so the only way scrollLeft moves is
+    // either a button paging call (already tracked via `pos`) or the user's
+    // own finger swipe, which this `pos` variable never sees. Left unsynced,
+    // the next wrap()/goToPage() call acts on a stale `pos` and snaps the
+    // carousel to a completely different photo than the one on screen.
+    viewport.addEventListener("scroll", function () {
+      if (isMobile() && !isAnimating) pos = viewport.scrollLeft;
+    });
 
     var slides = track.querySelectorAll(".room-slide");
     slides.forEach(function (slide) {
