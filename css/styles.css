@@ -690,6 +690,11 @@ section { padding: var(--space-7) 0; }
   object-fit: contain;
   border-radius: var(--radius-md);
   box-shadow: 0 2rem 4rem -0.5rem rgba(0, 0, 0, 0.6);
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+.lightbox-popup img.is-loading {
+  opacity: 0;
 }
 .lightbox-title {
   font-family: var(--font-mono);

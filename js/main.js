@@ -220,6 +220,11 @@
 
     function open(trigger, imageSrc, title) {
       lastTrigger = trigger;
+      popupImage.classList.add("is-loading");
+      popupImage.addEventListener("load", function handleLoad() {
+        popupImage.classList.remove("is-loading");
+        popupImage.removeEventListener("load", handleLoad);
+      });
       popupImage.src = imageSrc;
       popupImage.alt = title || "";
       popupTitle.textContent = title || "";
