@@ -876,7 +876,13 @@ section { padding: var(--space-7) 0; }
   /* Full viewport width per slide (no neighbor peeking at the edges) —
      the arrow buttons float on top of the photo instead of beside it. */
   .room-slide {
-    width: 100vw;
+    /* JS sets this to the room-viewport's actual clientWidth in px.
+       100vw is a fallback only — on many mobile browsers it doesn't
+       equal the real visible width (it can include scrollbar gutter
+       or round differently than the viewport element itself), so the
+       slide box and the scroll math computed from real DOM offsets
+       drift apart and a sliver of the next photo peeks into view. */
+    width: var(--room-slide-w, 100vw);
     height: auto;
     aspect-ratio: var(--room-ratio);
     cursor: default;
@@ -884,7 +890,7 @@ section { padding: var(--space-7) 0; }
   }
   .room-slide:hover,
   .room-slide:focus-within {
-    width: 100vw;
+    width: var(--room-slide-w, 100vw);
   }
   .room-slide img { object-fit: contain; }
   .room-slide-title,

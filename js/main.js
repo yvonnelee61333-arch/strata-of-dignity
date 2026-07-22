@@ -50,6 +50,21 @@
     var mobileMql = window.matchMedia("(max-width: 639px)");
     function isMobile() { return mobileMql.matches; }
 
+    // The mobile slide width is driven from here rather than a bare 100vw
+    // in CSS — on some mobile browsers 100vw doesn't equal the viewport's
+    // actual visible width, so the slide box and the real scroll offsets
+    // measured from the DOM (below) drift apart and the next photo peeks
+    // in at the edge. Setting it from the viewport's own clientWidth keeps
+    // both in agreement. Re-synced on resize/orientation change too.
+    function syncSlideWidth() {
+      viewport.style.setProperty("--room-slide-w", viewport.clientWidth + "px");
+    }
+    syncSlideWidth();
+    window.addEventListener("resize", function () {
+      syncSlideWidth();
+      snapToNearestSlide();
+    });
+
     // On mobile, one photo fills the viewport and paging is arrow-only —
     // no auto-advance marquee. Measures the real slide+gap width rather
     // than a hardcoded value so it stays correct if the CSS width changes.
@@ -95,6 +110,27 @@
       var slides = track.querySelectorAll(".room-slide");
       var n = slides.length / 2;
       return slides[n].offsetLeft - slides[0].offsetLeft;
+    }
+
+    // Rotating a phone (or any resize) can cross the mobile breakpoint —
+    // landscape width is usually well past 639px, so the desktop marquee
+    // briefly free-scrolls the track. Coming back to mobile width, the
+    // scroll position is wherever that marquee happened to stop, not
+    // aligned to any slide — exactly what shows up as a photo cut off
+    // mid-frame. Snapping to the nearest slide edge on every resize keeps
+    // mobile always resting exactly on one full photo.
+    function snapToNearestSlide() {
+      if (!isMobile()) return;
+      var slides = track.querySelectorAll(".room-slide");
+      var current = viewport.scrollLeft;
+      var nearest = slides[0].offsetLeft;
+      var minDiff = Math.abs(current - nearest);
+      slides.forEach(function (s) {
+        var diff = Math.abs(current - s.offsetLeft);
+        if (diff < minDiff) { minDiff = diff; nearest = s.offsetLeft; }
+      });
+      pos = nearest;
+      viewport.scrollLeft = nearest;
     }
 
     function wrap() {
