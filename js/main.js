@@ -200,6 +200,14 @@
     var dragStartPos = 0;
     var dragMoved = false;
 
+    // Browsers natively try to drag <img> elements out of the page (the
+    // "pick up and drop this image somewhere" gesture) — left unblocked,
+    // that hijacks the mouse gesture before our own pointermove handler
+    // below ever gets a usable drag, so nothing appears to happen at all.
+    viewport.addEventListener("dragstart", function (e) {
+      e.preventDefault();
+    });
+
     viewport.addEventListener("pointerdown", function (e) {
       if (e.button != null && e.button !== 0) return;
       isDragging = true;
