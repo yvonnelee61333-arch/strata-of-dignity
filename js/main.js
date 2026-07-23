@@ -241,6 +241,20 @@
       isDragging = false;
       viewport.classList.remove("is-dragging");
       resumeTimer = setTimeout(function () { isButtonPause = false; }, 600);
+
+      if (dragMoved) {
+        isHovering = false;
+        // A slide is tabindex="0", and pressing down on it to start the
+        // drag focuses it like any click would. The title/info caption
+        // shows on :focus-within same as :hover — but unlike :hover,
+        // focus doesn't clear just because the cursor moves away, so the
+        // slide the drag started on is left with its caption stuck
+        // visible indefinitely. Blurring it once the drag is confirmed
+        // real clears that, same as moving a mouse off a hovered slide.
+        if (document.activeElement && track.contains(document.activeElement)) {
+          document.activeElement.blur();
+        }
+      }
     }
     viewport.addEventListener("pointerup", endDrag);
     viewport.addEventListener("pointercancel", endDrag);
