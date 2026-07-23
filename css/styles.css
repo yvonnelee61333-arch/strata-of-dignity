@@ -747,6 +747,21 @@ section { padding: var(--space-7) 0; }
   /* fade the track edges into the section background */
   -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
   mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  cursor: grab;
+  touch-action: pan-y;
+}
+/* overflow:hidden means there's no native scroll/swipe gesture at all — JS
+   drives every bit of movement, including click-and-drag/touch-drag.
+   Deliberately no pointer-events:none here on the slides/images — this
+   class is added the instant a press starts (before we know if it'll turn
+   into an actual drag), and disabling hit-testing that early makes the
+   eventual pointerup/click hit-test the slide's parent div instead of the
+   img, so its click-to-lightbox listener silently stops firing even for a
+   plain, non-drag click. Click-suppression for real drags is handled in
+   JS instead, via the dragMoved flag. */
+.room-viewport.is-dragging {
+  cursor: grabbing;
+  user-select: none;
 }
 .room-track {
   display: flex;
@@ -795,7 +810,7 @@ section { padding: var(--space-7) 0; }
   width: var(--room-tile);
   height: var(--room-tile);
   border-radius: var(--radius-md);
-  cursor: pointer;
+  cursor: grab;
   transition: width 0.5s var(--ease-out);
   z-index: 1;
 }

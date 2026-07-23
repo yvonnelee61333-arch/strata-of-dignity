@@ -191,6 +191,63 @@
       if (isMobile() && !isAnimating) pos = viewport.scrollLeft;
     });
 
+    // Click-and-drag / touch-drag via Pointer Events (covers mouse and touch
+    // in one handler). .room-viewport is overflow:hidden specifically so it
+    // has no native scroll gesture of its own — every bit of movement,
+    // including this, is JS setting scrollLeft directly.
+    var isDragging = false;
+    var dragStartX = 0;
+    var dragStartPos = 0;
+    var dragMoved = false;
+
+    viewport.addEventListener("pointerdown", function (e) {
+      if (e.button != null && e.button !== 0) return;
+      isDragging = true;
+      dragMoved = false;
+      dragStartX = e.clientX;
+      dragStartPos = pos;
+      isButtonPause = true;
+      if (resumeTimer) clearTimeout(resumeTimer);
+      viewport.classList.add("is-dragging");
+    });
+
+    viewport.addEventListener("pointermove", function (e) {
+      if (!isDragging) return;
+      var delta = e.clientX - dragStartX;
+      // A few px of jitter on a plain click/tap shouldn't count as a drag.
+      if (!dragMoved && Math.abs(delta) > 3) {
+        dragMoved = true;
+        // Capture only once a real drag is confirmed, not on every
+        // pointerdown — capturing unconditionally retargets the eventual
+        // "click" event to the viewport itself (per the Pointer Events
+        // spec), which breaks the per-photo click-to-lightbox listeners
+        // even for a plain, non-drag click.
+        viewport.setPointerCapture(e.pointerId);
+      }
+      pos = dragStartPos - delta;
+      viewport.scrollLeft = pos;
+    });
+
+    function endDrag() {
+      if (!isDragging) return;
+      isDragging = false;
+      viewport.classList.remove("is-dragging");
+      resumeTimer = setTimeout(function () { isButtonPause = false; }, 600);
+    }
+    viewport.addEventListener("pointerup", endDrag);
+    viewport.addEventListener("pointercancel", endDrag);
+
+    // A drag that actually moved the track shouldn't also register as the
+    // click that opens the room photo in the lightbox on release. Capturing
+    // phase so this runs before the lightbox's own click listener on the img.
+    viewport.addEventListener("click", function (e) {
+      if (dragMoved) {
+        e.preventDefault();
+        e.stopPropagation();
+        dragMoved = false;
+      }
+    }, true);
+
     var slides = track.querySelectorAll(".room-slide");
     slides.forEach(function (slide) {
       slide.addEventListener("mouseenter", function () { isHovering = true; });
