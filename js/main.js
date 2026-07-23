@@ -209,6 +209,7 @@
     });
 
     viewport.addEventListener("pointerdown", function (e) {
+      if (isMobile()) return;
       if (e.button != null && e.button !== 0) return;
       isDragging = true;
       dragMoved = false;
