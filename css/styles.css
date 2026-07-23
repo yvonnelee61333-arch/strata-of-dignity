@@ -1257,6 +1257,16 @@ section { padding: var(--space-7) 0; }
   margin-bottom: var(--space-5);
 }
 .credit-names .client { color: var(--color-terracotta); }
+.credit-names .contact { margin-top: var(--space-1); }
+.credit-names .contact a {
+  color: #e8c9ab;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.credit-names .contact a:hover,
+.credit-names .contact a:focus-visible {
+  color: var(--color-terracotta);
+}
 .footer-meta {
   border-top: 1px solid rgba(255,255,255,0.12);
   padding-top: var(--space-3);
