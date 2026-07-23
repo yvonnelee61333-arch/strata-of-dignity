@@ -1068,15 +1068,18 @@ section { padding: var(--space-7) 0; }
   max-width: 100%;
 }
 .performance-figure-pair .performance-figure img {
+  /* height:auto (not a fixed height) alongside max-height matters here:
+     with a fixed height, once max-width:100% clamps the width down on
+     narrow/mobile screens, the image keeps the fixed height regardless —
+     stretching it to fill a box with the wrong aspect ratio. max-height
+     lets height shrink to match once width is the binding constraint,
+     preserving the image's real proportions at every viewport. Matched to
+     roughly the scale of the single full-width (max-width:640px) figures
+     used in the Heat Reduction / Flood Prevention tabs. */
   width: auto;
+  height: auto;
   max-width: 100%;
-  /* Same height on both regardless of viewport, matched to roughly the
-     scale of the single full-width (max-width:640px) figures used in the
-     Heat Reduction / Flood Prevention tabs — this pair reads noticeably
-     smaller than those otherwise. Flex-wrap stacks the pair below about
-     a 1050px container rather than squeezing narrower and losing the
-     matched height. */
-  height: 420px;
+  max-height: 420px;
 }
 .performance-figure {
   margin: 0 0 var(--space-4);
