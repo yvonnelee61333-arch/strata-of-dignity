@@ -1070,11 +1070,13 @@ section { padding: var(--space-7) 0; }
 .performance-figure-pair .performance-figure img {
   width: auto;
   max-width: 100%;
-  /* Same height on both regardless of viewport — wide enough to read
-     clearly, but low enough that the two combined still fit next to each
-     other down to a ~640px container; flex-wrap stacks them below that
-     rather than squeezing narrower and losing the matched height. */
-  height: 240px;
+  /* Same height on both regardless of viewport, matched to roughly the
+     scale of the single full-width (max-width:640px) figures used in the
+     Heat Reduction / Flood Prevention tabs — this pair reads noticeably
+     smaller than those otherwise. Flex-wrap stacks the pair below about
+     a 1050px container rather than squeezing narrower and losing the
+     matched height. */
+  height: 420px;
 }
 .performance-figure {
   margin: 0 0 var(--space-4);
