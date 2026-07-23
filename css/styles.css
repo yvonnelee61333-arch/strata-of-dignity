@@ -1048,6 +1048,34 @@ section { padding: var(--space-7) 0; }
   border-left: 2px solid var(--color-terracotta);
 }
 
+.performance-figure-pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.performance-figure-pair .performance-figure {
+  /* Flex items default to min-width:auto, which for a figure containing a
+     long caption sentence measures as the caption's full one-line width —
+     far wider than the image itself — and forces an early wrap. width:
+     fit-content shrinks the box down to the image's real rendered width
+     (a definite size, since height+auto-width make it a replaced element
+     with a fixed intrinsic width) and the caption text wraps to match it,
+     instead of stretching the whole figure out to fit on one line. */
+  flex: 0 1 auto;
+  min-width: 0;
+  width: fit-content;
+  max-width: 100%;
+}
+.performance-figure-pair .performance-figure img {
+  width: auto;
+  max-width: 100%;
+  /* Same height on both regardless of viewport — wide enough to read
+     clearly, but low enough that the two combined still fit next to each
+     other down to a ~640px container; flex-wrap stacks them below that
+     rather than squeezing narrower and losing the matched height. */
+  height: 240px;
+}
 .performance-figure {
   margin: 0 0 var(--space-4);
 }
@@ -1063,6 +1091,18 @@ section { padding: var(--space-7) 0; }
   font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--color-concrete);
+}
+.performance-figure-pair .performance-figure figcaption {
+  /* A caption's unwrapped text is wide enough on its own to make a
+     shrink-to-fit figure size itself to that instead of to its (narrower)
+     image, dragging the other figure down to the next row along with it.
+     width:0 stops the caption's own text length from counting toward the
+     figure's size at all; min-width:100% then re-stretches it back out to
+     match whatever width the image actually settled on, wrapping to a
+     second line past that. */
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
 }
 .performance-figure figcaption a {
   color: #e8c9ab;
